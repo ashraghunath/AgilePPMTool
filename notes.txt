@@ -1,0 +1,18 @@
+bootstrap 4.1.3 
+to use bootstrap - npm install bootstrap and import bootstrap/dist/css/bootstrap.min.css
+
+in jsx  its not class , its className
+
+react-router-dom 4.3.1
+
+
+Class base components can tap in life cycle hooks and states where as Functional component dont have these, it stateless
+
+//Turning class component to control component example Add project
+
+Gonna link value in input field to its state.
+
+name field in html form needs to match with the ones in backend
+state is immutable, to change state need to set new state
+
+When you get component rendered from route it always passes 3 props history location and match
