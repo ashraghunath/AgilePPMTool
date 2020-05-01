@@ -1,56 +1,76 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux"; //to connect to state;
-import { createProject } from "../../actions/projectAction";
+import { getProject, createProject } from "../../actions/projectAction";
 import classnames from "classnames";
 
-class AddProject extends Component {
+class UpdateProject extends Component {
   constructor() {
-    super(); //need to call this since extending Component
+    super();
 
-    //Set state while creating new form object, values need to be empty
     this.state = {
+      id: "",
       projectName: "",
       projectIdentifier: "",
       description: "",
       start_Date: "",
       end_Date: "",
-
-      //errors empty on load
       errors: {},
     };
 
-    this.onChange = this.onChange.bind(this); //bind on change to make state work and to be able to type values
+    this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  //lifecycle hook
-  //to receive props from state and add to component we use lifecycle hook
+  //when we mount api call is made and then props is also received
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
+
+    const {
+      id,
+      projectName,
+      projectIdentifier,
+      description,
+      start_Date,
+      end_Date,
+    } = nextProps.project;
+
+    this.setState({
+      id,
+      projectName,
+      projectIdentifier,
+      description,
+      start_Date,
+      end_Date,
+    });
   }
 
-  //event parameter
+  componentDidMount() {
+    //extract id from params which is passed in match
+    const { id } = this.props.match.params;
+    this.props.getProject(id, this.props.history);
+  }
+
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
 
   onSubmit(e) {
-    //prevents form to reload on submit
     e.preventDefault();
 
-    const newProject = {
+    const updateProject = {
+      id: this.state.id,
       projectName: this.state.projectName,
       projectIdentifier: this.state.projectIdentifier,
       description: this.state.description,
       start_Date: this.state.start_Date,
       end_Date: this.state.end_Date,
     };
-    this.props.createProject(newProject, this.props.history);
-  }
 
+    this.props.createProject(updateProject, this.props.history);
+  }
   render() {
     const { errors } = this.state;
     return (
@@ -58,9 +78,7 @@ class AddProject extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h5 className="display-4 text-center">
-                Create / Edit Project form
-              </h5>
+              <h5 className="display-4 text-center">Update Project</h5>
               <hr />
               <form onSubmit={this.onSubmit}>
                 <div className="form-group">
@@ -81,30 +99,21 @@ class AddProject extends Component {
                 <div className="form-group">
                   <input
                     type="text"
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.projectIdentifier,
-                    })}
-                    placeholder="Unique Project ID"
-                    name="projectIdentifier"
+                    className="form-control form-control-lg"
+                    placeholder="projectIdentifier"
+                    disabled
                     value={this.state.projectIdentifier}
-                    onChange={this.onChange}
+                    name="projectIdentifier"
                   />
-                  {errors.projectIdentifier && (
-                    <div className="invalid-feedbac">
-                      {errors.projectIdentifier}
-                    </div>
-                  )}
                 </div>
                 <div className="form-group">
                   <textarea
-                    className={classnames("form-control form-control-lg", {
-                      "is-invalid": errors.description,
-                    })}
-                    placeholder="Project Description"
+                    className="form-control form-control-lg"
+                    placeholder="description"
                     name="description"
                     value={this.state.description}
                     onChange={this.onChange}
-                  ></textarea>
+                  />
                   {errors.description && (
                     <div className="invalid-feedback">{errors.description}</div>
                   )}
@@ -143,17 +152,19 @@ class AddProject extends Component {
   }
 }
 
-//to map the errors coming from backend to the state
-//variable = parameter = assignment
-const mapStateToProps = (state) => ({
-  errors: state.errors,
-});
-
-AddProject.propTypes = {
-  //telling react that 'createProject' is a required prop type for this component to work properly,
+UpdateProject.propTypes = {
+  getProject: PropTypes.func.isRequired,
   createProject: PropTypes.func.isRequired,
+  project: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
 };
 
-//conect component to state
-export default connect(mapStateToProps, { createProject })(AddProject);
+const mapStatetoProps = (state) => ({
+  // state.rootreducer.name
+  project: state.project.project,
+  errors: state.errors,
+});
+
+export default connect(mapStatetoProps, { getProject, createProject })(
+  UpdateProject
+);

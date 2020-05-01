@@ -1,6 +1,7 @@
 package io.ashwin.ppmtool.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -31,6 +32,7 @@ public class Project {
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date end_Date;
 
+    @Column(updatable = false)
     @JsonFormat(pattern = "yyyy-mm-dd")
     private Date created_At;
 
@@ -47,6 +49,20 @@ public class Project {
     protected void onUpdate()
     {
         this.updated_at=new Date();
+    }
+
+    //fetch type ensures Backlog is available when a project loads
+    //cascade - backlog and other children like projectTask wil be deleted on deleting project
+    @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL, mappedBy = "project")
+    @JsonIgnore //to prevent getting list of backlogs everytime
+    private BackLog backLog;
+
+    public BackLog getBackLog() {
+        return backLog;
+    }
+
+    public void setBackLog(BackLog backLog) {
+        this.backLog = backLog;
     }
 
     public Project() {

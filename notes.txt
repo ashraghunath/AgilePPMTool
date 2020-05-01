@@ -16,3 +16,36 @@ name field in html form needs to match with the ones in backend
 state is immutable, to change state need to set new state
 
 When you get component rendered from route it always passes 3 props history location and match
+
+history paramters allows to replay
+
+//prevents form to reload on submit
+    e.preventDefault();
+
+npm i redux react-redux redux-thunk
+
+redux 4.0.0
+redux thunk 2.3.0
+react-redux 5.0.7
+axios 0.18
+
+redux-thunk is used to dispatch the reducer action to redux store
+
+to receive props from state and add to component we use lifecycle hook
+
+for form validation styling : npm i classnames , 2.2.6
+
+default exports are imported without {}
+named exports are imported with {}
+
+props cannot be passed from child back to parent.
+Example: dashboard passes project props to child ProjectItem but not vice versa.
+
+const {projects} = this.props.project; is equivalent to const projects = this.props.project.projects;
+
+in spring boot , @jsonignore ensures recursion problem while creating objects. patchmapping tells server we are updating something that already exists.
+one to one with project - each project will have one backlog
+one to many with projectTasks - one project can have many projectTasks
+refresh ensures when a projecttask which is child of bbacklog is deleted, backlog is refreshed
+orphanRemoval = true is required along with CascadeType.REFRESH for delete operation
+
