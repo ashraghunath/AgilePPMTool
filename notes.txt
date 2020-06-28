@@ -49,3 +49,6 @@ one to many with projectTasks - one project can have many projectTasks
 refresh ensures when a projecttask which is child of bbacklog is deleted, backlog is refreshed
 orphanRemoval = true is required along with CascadeType.REFRESH for delete operation
 
+//react general notes
+
+
