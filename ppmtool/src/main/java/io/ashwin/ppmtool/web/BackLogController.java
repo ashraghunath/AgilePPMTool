@@ -2,10 +2,8 @@ package io.ashwin.ppmtool.web;
 
 import io.ashwin.ppmtool.domain.ProjectTask;
 import io.ashwin.ppmtool.services.MapValidationErrorService;
-import io.ashwin.ppmtool.services.ProjectService;
 import io.ashwin.ppmtool.services.ProjectTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -25,6 +23,7 @@ public class BackLogController  {
     @Autowired
     MapValidationErrorService mapValidationErrorService;
 
+    //ALWAYS HAVE BindingResult RIGHT AFTER @Valid ARGUMENT
     @PostMapping("/{backlog_id}")
     public ResponseEntity<?> addProjectTaskToBackLog(@Valid @RequestBody ProjectTask projectTask, BindingResult bindingResult, @PathVariable String backlog_id)
     {
@@ -34,6 +33,19 @@ public class BackLogController  {
         ProjectTask projectTask1 = projectTaskService.addProjectTask(backlog_id, projectTask);
 
         return new ResponseEntity<ProjectTask>(projectTask1, HttpStatus.CREATED);
+    }
+
+    //patchmapping
+    @PatchMapping("/{backlogId}/{pt_id}")
+    public ResponseEntity<?> updateProjectTask(@Valid @RequestBody ProjectTask projectTask, BindingResult bindingResult, @PathVariable String backlogId, @PathVariable String pt_id)
+    {
+
+        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(bindingResult);
+        if(errorMap!=null) return errorMap;
+
+
+        ProjectTask updatedProjectTask = projectTaskService.updateByProjectSequence(projectTask,backlogId, pt_id);
+        return new ResponseEntity<ProjectTask>(projectTask, HttpStatus.OK);
     }
 
     @GetMapping("/{backlog_id}")
@@ -49,18 +61,7 @@ public class BackLogController  {
         return new ResponseEntity<ProjectTask>(projectTask, HttpStatus.OK);
     }
 
-    //patchmapping
-    @PatchMapping("/{backlogId}/{pt_id}")
-    public ResponseEntity<?> updateProjectTask(@Valid @RequestBody ProjectTask projectTask,@PathVariable String backlogId, @PathVariable String pt_id, BindingResult bindingResult)
-    {
 
-        ResponseEntity<?> errorMap = mapValidationErrorService.mapValidationService(bindingResult);
-        if(errorMap!=null) return errorMap;
-
-
-        ProjectTask updatedProjectTask = projectTaskService.updateByProjectSequence(projectTask,backlogId, pt_id);
-        return new ResponseEntity<ProjectTask>(projectTask, HttpStatus.OK);
-    }
 
     @DeleteMapping("/{backlogId}/{pt_id}")
     public ResponseEntity<?> deleteProjectTask(@PathVariable String backlogId, @PathVariable String pt_id)
